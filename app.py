@@ -50,7 +50,7 @@ class TCAdminBotRailway:
         try:
             chrome_options = Options()
             
-            # Configurações otimizadas para Railway (256MB RAM)
+            # Configurações ULTRA otimizadas para Railway ($1/mês)
             chrome_options.add_argument('--headless')
             chrome_options.add_argument('--no-sandbox')
             chrome_options.add_argument('--disable-dev-shm-usage')
@@ -59,18 +59,35 @@ class TCAdminBotRailway:
             chrome_options.add_argument('--disable-plugins')
             chrome_options.add_argument('--disable-images')
             chrome_options.add_argument('--disable-javascript')
-            chrome_options.add_argument('--window-size=1280,720')
+            chrome_options.add_argument('--disable-css')
+            chrome_options.add_argument('--disable-web-security')
+            chrome_options.add_argument('--disable-features=VizDisplayCompositor')
+            chrome_options.add_argument('--window-size=1024,768')
             chrome_options.add_argument('--memory-pressure-off')
-            chrome_options.add_argument('--max_old_space_size=128')
+            chrome_options.add_argument('--max_old_space_size=64')
+            chrome_options.add_argument('--single-process')
+            chrome_options.add_argument('--no-zygote')
+            chrome_options.add_argument('--disable-background-timer-throttling')
+            chrome_options.add_argument('--disable-backgrounding-occluded-windows')
+            chrome_options.add_argument('--disable-renderer-backgrounding')
+            chrome_options.add_argument('--disable-background-networking')
+            chrome_options.add_argument('--disable-default-apps')
+            chrome_options.add_argument('--disable-sync')
+            chrome_options.add_argument('--disable-translate')
+            chrome_options.add_argument('--hide-scrollbars')
+            chrome_options.add_argument('--mute-audio')
+            chrome_options.add_argument('--no-first-run')
+            chrome_options.add_argument('--disable-logging')
+            chrome_options.add_argument('--disable-permissions-api')
             chrome_options.add_argument('--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36')
             
-            # Configurar ChromeDriver (Railway)
+             # Configurar ChromeDriver (Railway)
             import glob
             chromedriver_path = glob.glob('/nix/store/*-chromedriver-*/bin/chromedriver')[0]
             service = Service(chromedriver_path)
             
             self.driver = webdriver.Chrome(service=service, options=chrome_options)
-            self.wait = WebDriverWait(self.driver, 10)
+            self.wait = WebDriverWait(self.driver, 5)  # Reduzido de 10 para 5 segundos
             
             self.logger.info("✅ Chrome driver configurado com sucesso")
             return True
@@ -80,13 +97,13 @@ class TCAdminBotRailway:
             return False
     
     def login_tcadmin(self):
-        """Faz login no TCAdmin"""
+        """Faz login no TCAdmin - OTIMIZADO"""
         try:
             self.logger.info("🔐 Fazendo login no TCAdmin...")
             
             # Navegar para o TCAdmin
             self.driver.get("https://tcadmin.xyz/")
-            time.sleep(2)
+            time.sleep(1)  # Reduzido de 2 para 1
             
             # Preencher login
             username_field = self.wait.until(
@@ -101,8 +118,8 @@ class TCAdminBotRailway:
             login_button = self.driver.find_element(By.XPATH, "//button[@type='submit']")
             login_button.click()
             
-            # Aguardar login
-            time.sleep(3)
+            # Aguardar login (reduzido)
+            time.sleep(2)  # Reduzido de 3 para 2
             
             self.logger.info("✅ Login realizado com sucesso")
             return True
@@ -144,7 +161,7 @@ class TCAdminBotRailway:
             return None
     
     def run_bot(self, order_id):
-        """Executa o bot para um pedido específico"""
+        """Executa o bot para um pedido específico - ULTRA OTIMIZADO"""
         try:
             self.logger.info(f"🤖 Iniciando bot para pedido: {order_id}")
             
@@ -167,8 +184,16 @@ class TCAdminBotRailway:
             self.logger.error(f"❌ Erro na execução do bot: {e}")
             return False
         finally:
+            # FECHAR DRIVER IMEDIATAMENTE para economizar recursos
             if self.driver:
-                self.driver.quit()
+                try:
+                    self.driver.quit()
+                    self.driver = None
+                except:
+                    pass
+            # Forçar garbage collection
+            import gc
+            gc.collect()
     
     def close(self):
         """Fecha o driver"""
